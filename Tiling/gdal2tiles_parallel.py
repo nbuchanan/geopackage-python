@@ -1147,20 +1147,20 @@ class GDAL2Tiles(object):
             f.write( self.generate_tilemapresource())
             f.close()
 
-        #if self.kml:
-        #   # TODO: Maybe problem for not automatically generated tminz
-        #   # The root KML should contain links to all tiles in the tminz level
-        #   children = []
-        #   xmin, ymin, xmax, ymax = self.tminmax[self.tminz]
-        #   for x in range(xmin, xmax+1):
-        #       for y in range(ymin, ymax+1):
-        #           children.append( [ x, y, self.tminz ] ) 
-        #   # Generate Root KML
-        #   if self.kml:
-        #       if not self.options.resume or not os.path.exists(os.path.join(self.output, 'doc.kml')):
-        #           f = open(os.path.join(self.output, 'doc.kml'), 'w')
-        #           f.write( self.generate_kml( None, None, None, children) )
-        #           f.close()
+        if self.kml:
+          # TODO: Maybe problem for not automatically generated tminz
+          # The root KML should contain links to all tiles in the tminz level
+          children = []
+          xmin, ymin, xmax, ymax = self.tminmax[self.tminz]
+          for x in range(xmin, xmax+1):
+              for y in range(ymin, ymax+1):
+                  children.append( [ x, y, self.tminz ] ) 
+          # Generate Root KML
+          if self.kml:
+              if not self.options.resume or not os.path.exists(os.path.join(self.output, 'doc.kml')):
+                  f = open(os.path.join(self.output, 'doc.kml'), 'w')
+                  f.write( self.generate_kml( None, None, None, children) )
+                  f.close()
         
     # -------------------------------------------------------------------------
     def generate_base_tiles(self, cpu):
@@ -1312,14 +1312,13 @@ class GDAL2Tiles(object):
 
                 del dstile
 
-                # Do not create KML, we dont use it and it takes up valuable processing time
                 # Create a KML file for this tile.
-                #if self.kml:
-                #   kmlfilename = os.path.join(self.output, str(tz), str(tx), '%d.kml' % ty)
-                #   if not self.options.resume or not os.path.exists(kmlfilename):
-                #       f = open( kmlfilename, 'w')
-                #       f.write( self.generate_kml( tx, ty, tz ))
-                #       f.close()
+                if self.kml:
+                  kmlfilename = os.path.join(self.output, str(tz), str(tx), '%d.kml' % ty)
+                  if not self.options.resume or not os.path.exists(kmlfilename):
+                      f = open( kmlfilename, 'w')
+                      f.write( self.generate_kml( tx, ty, tz ))
+                      f.close()
                     
                 if not self.options.verbose:
                     #queue.put(tcount)
@@ -1410,12 +1409,11 @@ class GDAL2Tiles(object):
                 if self.options.verbose:
                     print("\tbuild from zoom", tz+1," tiles:", (2*tx, 2*ty), (2*tx+1, 2*ty),(2*tx, 2*ty+1), (2*tx+1, 2*ty+1))
 
-                # Do not create KML
                 # Create a KML file for this tile.
-                #if self.kml:
-                #   f = open( os.path.join(self.output, '%d/%d/%d.kml' % (tz, tx, ty)), 'w')
-                #   f.write( self.generate_kml( tx, ty, tz, children ) )
-                #   f.close()
+                if self.kml:
+                  f = open( os.path.join(self.output, '%d/%d/%d.kml' % (tz, tx, ty)), 'w')
+                  f.write( self.generate_kml( tx, ty, tz, children ) )
+                  f.close()
 
                 if not self.options.verbose:
                     #queue.put(tcount)
